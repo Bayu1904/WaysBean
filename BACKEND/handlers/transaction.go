@@ -6,15 +6,13 @@ import (
 	"be-waybucks/models"
 	"be-waybucks/repositories"
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
 
-	"github.com/midtrans/midtrans-go"
+	"github.com/go-playground/validator/v10"
 	"github.com/midtrans/midtrans-go/coreapi"
-	"github.com/midtrans/midtrans-go/snap"
 
 	"github.com/gorilla/mux"
 
@@ -74,13 +72,19 @@ func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Re
 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
 	idUser := int(userInfo["id"].(float64))
 
-	var request transactiondto.UpdateTransaction
-	err := json.NewDecoder(r.Body).Decode(&request)
+	request := new(transactiondto.CreateTransaction)
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	validate := validator.New()
+	err := validate.Struct(request)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
-		return
 	}
 
 	var TransIdIsMatch = false
@@ -96,53 +100,19 @@ func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Re
 	transaction := models.Transaction{
 		ID:     TransactionId,
 		UserID: idUser,
-		Status: "unpay",
-		Total:  request.Total,
+		Status: "active",
 	}
 
-	data, err := h.TransactionRepository.CreateTransaction(transaction)
-	fmt.Println(data)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
+	statusCheck, _ := h.TransactionRepository.FindbyIDTransaction(idUser, "active")
+	if statusCheck.Status == "active" {
+		response := dto.SuccessResult{Code: http.StatusOK, Data: transaction}
+		json.NewEncoder(w).Encode(response)
+	} else {
+		data, _ := h.TransactionRepository.CreateTransaction(transaction)
+		w.WriteHeader(http.StatusOK)
+		response := dto.SuccessResult{Code: 200, Data: data}
 		json.NewEncoder(w).Encode(response)
 	}
-
-	dataTransactions, err := h.TransactionRepository.GetTransaction(data.ID)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(err.Error())
-		return
-	}
-
-	// Request payment token from midtrans here ...
-	// 1. Initiate Snap client
-	var s = snap.Client{}
-	s.New(os.Getenv("SERVER_KEY"), midtrans.Sandbox)
-	// Use to midtrans.Production if you want Production Environment (accept real transaction).
-
-	// 2. Initiate Snap request param
-	req := &snap.Request{
-		TransactionDetails: midtrans.TransactionDetails{
-			OrderID:  strconv.Itoa(dataTransactions.ID),
-			GrossAmt: int64(dataTransactions.Total),
-		},
-		CreditCard: &snap.CreditCardDetails{
-			Secure: true,
-		},
-		CustomerDetail: &midtrans.CustomerDetails{
-			FName: dataTransactions.User.Name,
-			Email: dataTransactions.User.Email,
-		},
-	}
-
-	// 3. Execute request create Snap transaction to Midtrans Snap API
-	snapResp, _ := s.CreateTransaction(req)
-
-	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: 200, Data: snapResp}
-	json.NewEncoder(w).Encode(response)
-
 }
 
 func (h handlerTransaction) DeleteTransaction(w http.ResponseWriter, r *http.Request) {
@@ -247,7 +217,7 @@ func (h *handlerTransaction) FindbyIDTransaction(w http.ResponseWriter, r *http.
 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
 	userId := int(userInfo["id"].(float64))
 	// id, _ := strconv.Atoi(mux.Vars(r)["id"])
-	transaction, err := h.TransactionRepository.FindbyIDTransaction(userId, "unpay")
+	transaction, err := h.TransactionRepository.FindbyIDTransaction(userId, "active")
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}

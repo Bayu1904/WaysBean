@@ -79,13 +79,11 @@ func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	price, _ := strconv.Atoi(r.FormValue("price"))
 	Stock, _ := strconv.Atoi(r.FormValue("stock"))
-	toping_id, _ := strconv.Atoi(r.FormValue("category_id"))
 	request := productdto.ProductRequest{
-		Name:     r.FormValue("name"),
-		Desc:     r.FormValue("desc"),
-		Price:    price,
-		Stock:    Stock,
-		TopingID: toping_id,
+		Name:  r.FormValue("name"),
+		Desc:  r.FormValue("desc"),
+		Price: price,
+		Stock: Stock,
 	}
 
 	validation := validator.New()
@@ -101,7 +99,7 @@ func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		Name:   request.Name,
 		Desc:   request.Desc,
 		Price:  request.Price,
-		Image:  filename, // add this code
+		Image:  filename,
 		Stock:  request.Stock,
 		UserID: userId,
 	}
@@ -113,11 +111,11 @@ func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-	//ss
+
 	product, _ = h.ProductRepository.GetProduct(product.ID)
 
 	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: http.StatusOK, Data: product}
+	response := dto.SuccessResult{Code: http.StatusOK, Data: convertResponseProduct(product)}
 	json.NewEncoder(w).Encode(response)
 }
 

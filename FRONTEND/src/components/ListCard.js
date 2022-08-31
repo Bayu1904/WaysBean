@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { API } from "../config/api";
 import { useQuery } from "react-query";
-import {Coffee} from "../API/DummyAPI"
+import { Coffee } from "../API/DummyAPI";
 
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
@@ -11,16 +11,25 @@ import Col from "react-bootstrap/Col";
 import formatPrice from "../utils/formatPrice";
 
 export default function ListCard() {
-  let { data: products } = useQuery("productsCache", async () => {
-    const response = await API.get("/products");
-    return response.data.data;
-  });
-  console.log(products);
+  const [products, SetProducts] = useState([]);
+
+  const findProducts = async () => {
+    try {
+      let response = await API.get("/products");
+      SetProducts(response.data.data);
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
+  useEffect(() => {
+    findProducts();
+  }, []);
 
   return (
     <Container className="my-5">
       <Row>
-        {Coffee.map((items, index) => (
+        {products.map((items, index) => (
           <Col className="mt-4">
             <Card
               key={index}
@@ -53,7 +62,7 @@ export default function ListCard() {
                     {formatPrice(items.price)}
                   </p>
                   <p style={{ color: "#613D2B", margin: 0 }}>
-                    Stock :  {items.Stock}
+                    Stock : {items.stock}
                   </p>
                 </Card.Body>
               </Link>

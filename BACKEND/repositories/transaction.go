@@ -22,13 +22,13 @@ func RepositoryTransaction(db *gorm.DB) *repository {
 }
 func (r *repository) FindTransactions() ([]models.Transaction, error) {
 	var transactions []models.Transaction
-	err := r.db.Preload("User").Preload("Carts").Preload("Carts.Product").Preload("Carts.Toping").Find(&transactions).Error
+	err := r.db.Preload("User").Preload("Carts").Preload("Carts.Product").Find(&transactions).Error
 	return transactions, err
 }
 
 func (r *repository) GetTransaction(ID int) (models.Transaction, error) {
 	var transaction models.Transaction
-	err := r.db.Preload("User").Preload("Carts").Preload("Carts.Product").Preload("Carts.Toping").Find(&transaction, ID).Error
+	err := r.db.Preload("User").Preload("Carts").Preload("Carts.Product").Find(&transaction, ID).Error
 	return transaction, err
 }
 
@@ -71,7 +71,7 @@ func (r *repository) UpdateTransactions(status string, ID string) error {
 
 func (r *repository) FindbyIDTransaction(TransactionId int, Status string) (models.Transaction, error) {
 	var transaction models.Transaction
-	err := r.db.Preload("User").Preload("Carts").Preload("Carts.Product").Preload("Carts.Toping").Where("ID = ? AND status = ?", TransactionId, Status).First(&transaction).Error
+	err := r.db.Preload("User").Preload("Carts").Preload("Carts.Product").Where("user_id = ? AND status = ?", TransactionId, Status).First(&transaction).Error
 
 	return transaction, err
 }

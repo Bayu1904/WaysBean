@@ -11,6 +11,7 @@ type CartRepository interface {
 	GetCart(ID int) (models.Cart, error)
 	CreateCart(Cart models.Cart) (models.Cart, error)
 	DeleteCart(Cart models.Cart, ID int) (models.Cart, error)
+	GetTransactionID(UserID int) (models.Transaction, error)
 }
 
 func RepositoryCart(db *gorm.DB) *repository {
@@ -19,16 +20,22 @@ func RepositoryCart(db *gorm.DB) *repository {
 
 func (r *repository) FindCarts() ([]models.Cart, error) {
 	var carts []models.Cart
-	err := r.db.Preload("Product").Preload("Toping").Find(&carts).Error
+	err := r.db.Preload("Product").Find(&carts).Error
 
 	return carts, err
 }
 
 func (r *repository) GetCart(ID int) (models.Cart, error) {
 	var cart models.Cart
-	err := r.db.Preload("Product").Preload("Toping").First(&cart, ID).Error
+	err := r.db.Preload("Product").First(&cart, ID).Error
 
 	return cart, err
+}
+
+func (r *repository) GetTransactionID(UserID int) (models.Transaction, error) {
+	var transaction models.Transaction
+	err := r.db.Preload("User").Preload("Carts").Preload("Carts.Product").Where("user_id = ? AND status = ?", UserID, "active").First(&transaction).Error
+	return transaction, err
 }
 
 func (r *repository) CreateCart(cart models.Cart) (models.Cart, error) {

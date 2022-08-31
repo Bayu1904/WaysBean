@@ -20,12 +20,14 @@ export default function AddProduct() {
   const [preview, setPreview] = useState(null);
   const [nameUrl, setNameUrl] = useState();
   const [addProduct, setAddProduct] = useState({
-    titleProduct: "",
+    name: "",
     price: "",
     image: "",
+    desc: "",
+    stock: "",
   });
 
-  const { titleProduct, price, image } = addProduct;
+  const { name, price, image, desc, stock } = addProduct;
 
   const handleChange = (e) => {
     setAddProduct({
@@ -40,7 +42,6 @@ export default function AddProduct() {
       setNameUrl(e.target.name[0]);
     }
   };
-  console.log(addProduct);
 
   const handleSubmit = useMutation(async (e) => {
     try {
@@ -50,8 +51,10 @@ export default function AddProduct() {
       // Store data with FormData as object
       const formData = new FormData();
       formData.set("image", addProduct.image[0], addProduct.image[0].name);
-      formData.set("name", addProduct.titleProduct);
+      formData.set("name", addProduct.name);
       formData.set("price", addProduct.price);
+      formData.set("stock", addProduct.stock);
+      formData.set("desc", addProduct.desc);
 
       console.log(formData);
       // Configuration
@@ -62,7 +65,7 @@ export default function AddProduct() {
       };
 
       // Insert product data
-      const response = await API.post("/product", formData, config);
+      await API.post("/product", formData, config);
       // console.log(response);
       alert("berhasil menambahkan product");
       await delay(500);
@@ -83,17 +86,18 @@ export default function AddProduct() {
             <Form onSubmit={(e) => handleSubmit.mutate(e)} className="text-center">
               <Form.Control
                   type="text"
-                  placeholder="Title"
-                  value={titleProduct}
-                  name="title"
+                  placeholder="Product Name"
+                  value={name}
+                  name="name"
                   onChange={handleChange}
                   className="px-3 py-2 mt-3"
                   style={{border: "2px solid #613D2B"}}
-                />
+                  />
               <Form.Control
                   type="text"
                   placeholder="Stock"
-                  name="Stock"
+                  value={stock}
+                  name="stock"
                   onChange={handleChange}
                   className="px-3 py-2 mt-3"
                   style={{border: "2px solid #613D2B"}}
@@ -108,17 +112,16 @@ export default function AddProduct() {
                   style={{border: "2px solid #613D2B"}}
                 />
               <textarea
-                  placeholder="Price"
-                  value={price}
-                  name="price"
+                  placeholder="Description Product"
+                  value={desc}
+                  name="desc"
                   onChange={handleChange}
                   className="px-3 py-2 mt-3"
                   style={{border: "2px solid #613D2B", width: "100%", height: 200, overflow: "auto"}}
-                />
+                  />
               <Form.Control
                   type="file"
-                  placeholder="FILE"
-                  name="file"
+                  name="image"
                   onChange={handleChange}
                   className="px-3 py-2 mt-3"
                   style={{border: "2px solid #613D2B"}}

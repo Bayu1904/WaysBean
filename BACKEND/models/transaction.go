@@ -7,4 +7,5 @@ type Transaction struct {
 	Status string `json:"status"`
 	Total  int64  `json:"total"`
 	Carts  []Cart `json:"carts"`
+	Qty    int    `json:"qty"`
 }

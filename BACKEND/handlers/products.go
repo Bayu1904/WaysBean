@@ -126,7 +126,6 @@ func (h *handlerProduct) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
 
 	dataContex := r.Context().Value("dataFile") // add this code
-	fmt.Println("ini handle", dataContex)       // add this code
 
 	filename := dataContex.(string)
 

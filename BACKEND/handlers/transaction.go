@@ -150,7 +150,7 @@ func (h *handlerTransaction) UpdateTransaction(w http.ResponseWriter, r *http.Re
 		json.NewEncoder(w).Encode(response)
 	}
 
-	transaction, err := h.TransactionRepository.FindbyIDTransaction(idTrans, "unpay")
+	transaction, err := h.TransactionRepository.FindbyIDTransaction(idTrans, "active")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
@@ -165,7 +165,7 @@ func (h *handlerTransaction) UpdateTransaction(w http.ResponseWriter, r *http.Re
 		transaction.Total = request.Total
 	}
 
-	if request.Status != "unpay" {
+	if request.Status != "active" {
 		transaction.Status = request.Status
 	}
 

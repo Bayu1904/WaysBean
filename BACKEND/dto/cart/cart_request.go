@@ -7,3 +7,8 @@ type CartRequest struct {
 	SubAmount     int ` json:"sub_amount"`
 	TransactionID int ` json:"transaction_id"`
 }
+
+type CartUpdate struct {
+	Qty       int ` json:"qty" `
+	SubAmount int ` json:"sub_amount"`
+}

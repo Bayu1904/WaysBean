@@ -14,6 +14,7 @@ type CartResponse struct {
 	ID        int             `json:"id"`
 	ProductID int             `json:"product_id"`
 	Product   ProductResponse `json:"product"`
+	Qty       int             `json:"qty"`
 	SubAmount int             `json:"sub_amount"`
 }
 

@@ -12,6 +12,7 @@ import LandingPage from "./pages/Landingpages";
 import Cart from "./pages/Cart";
 import Profile from "./pages/Profile";
 import AddProduct from "./pages/addProduct/AddProduct";
+import UpdateProduct from "./pages/addProduct/UpdateProduct";
 import Income from "./pages/Income";
 import Detail from "./pages/Detail";
 import ListProduct from "./pages/ListProduct";
@@ -41,7 +42,7 @@ function App() {
         navigate("/");
       }
     }
-  },[state]);
+  }, [state]);
 
   const checkUser = async () => {
     try {
@@ -71,7 +72,7 @@ function App() {
 
   useEffect(() => {
     checkUser();
-  },[]);
+  }, []);
 
   return (
     <Routes>
@@ -81,6 +82,7 @@ function App() {
       <Route path="/cart" element={<Cart />} />
       <Route path="/income" element={<Income />} />
       <Route path="/addProduct" element={<AddProduct />} />
+      <Route path="/addProduct/:id" element={<UpdateProduct />} />
       <Route path="/listProduct" element={<ListProduct />} />
     </Routes>
   );

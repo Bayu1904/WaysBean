@@ -105,7 +105,7 @@ func (h *handlerCart) CreateCart(w http.ResponseWriter, r *http.Request) {
 	cartForm := models.Cart{
 		ProductID:     request.ProductID,
 		TransactionID: transaction.ID,
-		Qty:           request.Qty,
+		Qty:           1,
 		SubAmount:     request.SubAmount,
 	}
 

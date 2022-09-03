@@ -6,15 +6,23 @@ import { API } from "../config/api";
 import { UserContext } from "../utils/CreateContext";
 
 // bootstrap
-import { Alert, Form, Container, NavDropdown, Nav, Navbar, Modal } from "react-bootstrap";
+import {
+  Alert,
+  Form,
+  Container,
+  NavDropdown,
+  Nav,
+  Navbar,
+  Modal,
+} from "react-bootstrap";
 
 // image
-import Logo from "../Assets/FrameLogo.svg"
-import Kopi from "../Assets/VectorLogoKopi.png"
-import ProfileVek from "../Assets/user 2.png"
-import Foto from "../Assets/Ellipse 1icon.png"
-import Logout from "../Assets/logout.png"
-import Cart from "../Assets/Groupcart.png"
+import Logo from "../Assets/FrameLogo.svg";
+import Kopi from "../Assets/VectorLogoKopi.png";
+import ProfileVek from "../Assets/user 2.png";
+import Foto from "../Assets/Ellipse 1icon.png";
+import Logout from "../Assets/logout.png";
+import Cart from "../Assets/Groupcart.png";
 
 let profilPict = <img src={Foto} alt="122" />;
 function Header() {
@@ -24,7 +32,6 @@ function Header() {
     return response.data.data;
   });
 
-
   // StateRegister
   const [message, setMessage] = useState(null);
   const [form, setForm] = useState({
@@ -32,7 +39,7 @@ function Header() {
     email: "",
     password: "",
   });
-  
+
   const { name, email, password } = form;
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -60,23 +67,23 @@ function Header() {
   const [show, setShow] = useState(false);
   const [reg, setReg] = useState(false);
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => (setShow(false), setMessage(null));
   const handleShow = () => setShow(true);
-  const regClose = () => setReg(false);
+  const regClose = () => (setReg(false), setMessage(null));
   const regShow = () => setReg(true);
 
   const handleSwitchLogin = () => {
-    setReg(false)
-    setShow(true)
-  }
+    setReg(false);
+    setShow(true);
+  };
 
   const handleSwitchReg = () => {
-    setShow(false)
-    setReg(true)
-  }
+    setShow(false);
+    setReg(true);
+  };
 
   // UseContext
- const [state, dispatch] = useContext(UserContext);;
+  const [state, dispatch] = useContext(UserContext);
 
   const navigate = useNavigate();
 
@@ -190,24 +197,27 @@ function Header() {
     <Navbar expand="lg" className="shadow sticky-top">
       <Container>
         <Navbar.Brand>
-          {state.isAdmin ? <Link to="/income">
-            <img
-              src={Logo}
-              width="100%"
-              height="50"
-              className="d-inline-block align-top"
-              alt="logo brand"
-            />
-          </Link> : <Link to="/">
-            <img
-              src={Logo}
-              width="100%"
-              height="50"
-              className="d-inline-block align-top"
-              alt="logo brand"
-            />
-          </Link> }
-          
+          {state.isAdmin ? (
+            <Link to="/income">
+              <img
+                src={Logo}
+                width="100%"
+                height="50"
+                className="d-inline-block align-top"
+                alt="logo brand"
+              />
+            </Link>
+          ) : (
+            <Link to="/">
+              <img
+                src={Logo}
+                width="100%"
+                height="50"
+                className="d-inline-block align-top"
+                alt="logo brand"
+              />
+            </Link>
+          )}
         </Navbar.Brand>
 
         <div className="d-flex">
@@ -280,10 +290,7 @@ function Header() {
           ) : (
             <>
               {" "}
-              <button
-                className="login"
-                onClick={handleShow}
-              >
+              <button className="login" onClick={handleShow}>
                 Login
               </button>
               <button className="register" onClick={regShow}>
@@ -298,7 +305,10 @@ function Header() {
               Login
             </h1>
             {message && message}
-            <Form onSubmit={ (e) => handleSubmitLogin.mutate(e)} className="text-center">
+            <Form
+              onSubmit={(e) => handleSubmitLogin.mutate(e)}
+              className="text-center"
+            >
               <Modal.Body>
                 <Form.Control
                   type="email"
@@ -308,7 +318,7 @@ function Header() {
                   onChange={handleChangeLog}
                   id="email"
                   className="px-3 py-2 mt-3"
-                  style={{border: "2px solid #613D2B"}}
+                  style={{ border: "2px solid #613D2B" }}
                 />
                 <Form.Control
                   type="password"
@@ -318,10 +328,13 @@ function Header() {
                   id="password"
                   onChange={handleChangeLog}
                   className="px-3 py-2 mt-3"
-                  style={{border: "2px solid #613D2B"}}
+                  style={{ border: "2px solid #613D2B" }}
                 />
               </Modal.Body>
-              <button className="submit" type="submit"> LOGIN</button>
+              <button className="submit" type="submit">
+                {" "}
+                LOGIN
+              </button>
             </Form>
             <p className="text-center mt-3">
               Dont have an Account? click{" "}
@@ -345,7 +358,10 @@ function Header() {
               Register
             </h1>
             {message && message}
-            <Form onSubmit={(e) => handleSubmit.mutate(e)} className="text-center">
+            <Form
+              onSubmit={(e) => handleSubmit.mutate(e)}
+              className="text-center"
+            >
               <Modal.Body>
                 <Form.Control
                   type="text"
@@ -354,7 +370,7 @@ function Header() {
                   name="name"
                   onChange={handleChange}
                   className="px-3 py-2"
-                  style={{border: "2px solid #613D2B"}}
+                  style={{ border: "2px solid #613D2B" }}
                 />
                 <Form.Control
                   type="email"
@@ -363,7 +379,7 @@ function Header() {
                   name="email"
                   onChange={handleChange}
                   className="px-3 py-2 mt-3"
-                  style={{border: "2px solid #613D2B"}}
+                  style={{ border: "2px solid #613D2B" }}
                 />
                 <Form.Control
                   type="password"
@@ -372,10 +388,13 @@ function Header() {
                   name="password"
                   onChange={handleChange}
                   className="px-3 py-2 mt-3"
-                  style={{border: "2px solid #613D2B"}}
+                  style={{ border: "2px solid #613D2B" }}
                 />
               </Modal.Body>
-              <button className="submit" type="submit"> REGISTER</button>
+              <button className="submit" type="submit">
+                {" "}
+                REGISTER
+              </button>
             </Form>
             <div className="text-center my-3">
               Already have an account ? Click{" "}

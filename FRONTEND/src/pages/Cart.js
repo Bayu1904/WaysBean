@@ -1,4 +1,4 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import { API } from "../config/api";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "react-query";
@@ -9,10 +9,49 @@ import Col from "react-bootstrap/esm/Col";
 
 import formatPrice from "../utils/formatPrice";
 import Delete from "../Assets/Vector.png";
-import Button from "../components/inputForm/Button";
 import Header from "../components/Header";
 
 export default function Cart() {
+  const handleClickplus = async (qty, id, price) => {
+    // Counter state is incremented
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+      },
+    };
+    const newQty = qty + 1;
+    const newTotal = price * newQty;
+    const req = JSON.stringify({
+      qty: newQty,
+      sub_amount: newTotal,
+    });
+    await API.patch(`/cart/${id}`, req, config);
+    refetch();
+  };
+
+  const handleClickmin = async (id, qty, price, sub_amount) => {
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+      },
+    };
+    console.log(sub_amount);
+    console.log(price);
+    // Counter state is decremented
+    if (qty === 1) {
+      return;
+    }
+    const newQty = qty - 1;
+    const newTotal = sub_amount - price * newQty;
+    console.log(newTotal);
+    const req = JSON.stringify({
+      qty: newQty,
+      sub_amount: newTotal * newQty,
+    });
+    await API.patch(`/cart/${id}`, req, config);
+    refetch();
+  };
+
   let navigate = useNavigate();
   // Get data transaction by ID
   let { data: transaction, refetch } = useQuery("transCache", async () => {
@@ -29,7 +68,9 @@ export default function Cart() {
   let Total = transaction?.carts?.reduce((a, b) => {
     return a + b.sub_amount;
   }, 0);
-  console.log(Total);
+  let TotalQTY = transaction?.carts?.reduce((a, b) => {
+    return a + b.qty;
+  }, 0);
 
   // pay Handler
   const form = {
@@ -37,63 +78,62 @@ export default function Cart() {
     total: Total,
   };
 
-  const handleSubmit = useMutation(async (e) => {
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-      },
-    };
+  // const handleSubmit = useMutation(async (e) => {
+  //   const config = {
+  //     headers: {
+  //       "Content-type": "application/json",
+  //     },
+  //   };
 
-    // Insert transaction data
-    const body = JSON.stringify(form);
+  //   // Insert transaction data
+  //   const body = JSON.stringify(form);
 
-    const response = await API.patch("/transactionID", body, config);
+  //   const response = await API.patch("/transactionID", body, config);
 
-    console.log(response);
+  //   console.log(response);
 
-    const token = response.data.data.token;
-    console.log(token);
-    window.snap.pay(token, {
-      onSuccess: function (result) {
-        /* You may add your own implementation here */
-        console.log(result);
-        navigate("/profile");
-      },
-      onPending: function (result) {
-        /* You may add your own implementation here */
-        console.log(result);
-        navigate("/profile");
-      },
-      onError: function (result) {
-        /* You may add your own implementation here */
-        console.log(result);
-      },
-      onClose: function () {
-        /* You may add your own implementation here */
-        alert("you closed the popup without finishing the payment");
-      },
-    });
-  });
+  //   const token = response.data.data.token;
+  //   console.log(token);
+  //   window.snap.pay(token, {
+  //     onSuccess: function (result) {
+  //       /* You may add your own implementation here */
+  //       console.log(result);
+  //       navigate("/profile");
+  //     },
+  //     onPending: function (result) {
+  //       /* You may add your own implementation here */
+  //       console.log(result);
+  //       navigate("/profile");
+  //     },
+  //     onError: function (result) {
+  //       /* You may add your own implementation here */
+  //       console.log(result);
+  //     },
+  //     onClose: function () {
+  //       /* You may add your own implementation here */
+  //       alert("you closed the popup without finishing the payment");
+  //     },
+  //   });
+  // });
 
-  // useEffect on Mitrans
-  useEffect(() => {
-    //change this to the script source you want to load, for example this is snap.js sandbox env
-    const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
-    //change this according to your client-key
-    const myMidtransClientKey = process.env.REACT_APP_MIDTRANS_CLIENT_KEY;
+  // // useEffect on Mitrans
+  // useEffect(() => {
+  //   //change this to the script source you want to load, for example this is snap.js sandbox env
+  //   const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
+  //   //change this according to your client-key
+  //   const myMidtransClientKey = process.env.REACT_APP_MIDTRANS_CLIENT_KEY;
 
-    let scriptTag = document.createElement("script");
-    scriptTag.src = midtransScriptUrl;
-    // optional if you want to set script attribute
-    // for example snap.js have data-client-key attribute
-    scriptTag.setAttribute("data-client-key", myMidtransClientKey);
+  //   let scriptTag = document.createElement("script");
+  //   scriptTag.src = midtransScriptUrl;
+  //   // optional if you want to set script attribute
+  //   // for example snap.js have data-client-key attribute
+  //   scriptTag.setAttribute("data-client-key", myMidtransClientKey);
 
-    document.body.appendChild(scriptTag);
-    return () => {
-      document.body.removeChild(scriptTag);
-    };
-  }, []);
-
+  //   document.body.appendChild(scriptTag);
+  //   return () => {
+  //     document.body.removeChild(scriptTag);
+  //   };
+  // }, []);
   return (
     <>
       <Header />
@@ -104,7 +144,7 @@ export default function Cart() {
           <Col md={8}>
             <hr />
             <Container className="justify-content-between ">
-              {transaction?.carts?.map((item, index) => (
+              {transaction?.carts.map((item, index) => (
                 <Row style={{ fontSize: 14 }}>
                   <Col md={8} className="d-flex">
                     <div
@@ -117,22 +157,35 @@ export default function Cart() {
                       }}
                     >
                       <img
-                        src={item.product?.image}
+                        src={
+                          "http://localhost:5000/uploads/" + item.product?.image
+                        }
                         alt="img"
                         style={{ width: "100%" }}
                       />
                     </div>
                     <div>
                       <p style={{ fontWeight: 900 }}>{item.product.name}</p>
-                      <p style={{ fontSize: 14 }}>
-                        <span style={{ color: "#613D2B", fontWeight: 800 }}>
-                          Toping{" "}
-                        </span>
-                        :{" "}
-                        {item.toping
-                          .map((items, index) => items.name)
-                          .join(", ")}
-                      </p>
+                      <button
+                        onClick={() =>
+                          handleClickmin(
+                            item.id,
+                            item.qty,
+                            item.product.price,
+                            item.sub_amount
+                          )
+                        }
+                      >
+                        Less
+                      </button>
+                      <p className="d-inline mx-2">{item?.qty}</p>
+                      <button
+                        onClick={() =>
+                          handleClickplus(item.qty, item.id, item.product.price)
+                        }
+                      >
+                        Add
+                      </button>
                     </div>
                   </Col>
                   <Col
@@ -163,7 +216,7 @@ export default function Cart() {
               </Col>
               <Col>
                 <p>{formatPrice(Total)}</p>
-                <p>{transaction?.carts?.length}</p>
+                <p>{TotalQTY}</p>
               </Col>
             </Row>
             <hr />
@@ -175,7 +228,14 @@ export default function Cart() {
                 <p>{formatPrice(Total)}</p>
               </Col>
             </Row>
-            <button className="submit" type="submit" onClick={(e) => handleSubmit.mutate(e)}> PAY</button>
+            <button
+              className="submit"
+              type="submit"
+              // onClick={(e) => handleSubmit.mutate(e)}
+            >
+              {" "}
+              PAY
+            </button>
           </Col>
         </Row>
       </Container>

@@ -9,12 +9,11 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 export default function ProfileComp() {
-  let { data: transaction } = useQuery("traans", async () => {
-    const response = await API.get("/transaction-id");
+  let { data: transaction } = useQuery("traans1", async () => {
+    const response = await API.get("/transaction-status");
     return response.data.data;
   });
 
-  
   console.log(transaction);
   return (
     <Container fluid className="w-75 m-auto mt-5">
@@ -50,8 +49,8 @@ export default function ProfileComp() {
           <h3 className="mb-4" style={{ color: "#613D2B" }}>
             My Transaction
           </h3>
-          <div style={{ height: "350px", overflow: "auto"}}>
-          <Transaction data={ transaction} />
+          <div style={{ height: "350px", overflow: "auto" }}>
+            <Transaction data={transaction} />
           </div>
         </Col>
       </Row>

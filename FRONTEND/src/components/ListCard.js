@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { API } from "../config/api";
-import { useQuery } from "react-query";
-import { Coffee } from "../API/DummyAPI";
+import { UserContext } from "../utils/CreateContext";
 
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
@@ -12,6 +11,7 @@ import formatPrice from "../utils/formatPrice";
 
 export default function ListCard() {
   const [products, SetProducts] = useState([]);
+  const [state] = useContext(UserContext);
 
   const findProducts = async () => {
     try {
@@ -42,7 +42,7 @@ export default function ListCard() {
               }}
             >
               <Link
-                to={"/detail/" + items.id}
+                to={state.isLogin ? "/detail/" + items.id : "/"}
                 className=" text-decoration-none"
               >
                 <Card.Img
@@ -56,7 +56,7 @@ export default function ListCard() {
                     className="fw-bold"
                     style={{ fontSize: "18px", margin: 0, color: "#613D2B" }}
                   >
-                    {items.title}
+                    {items.name}
                   </p>
                   <p style={{ color: "#613D2B", margin: 0 }}>
                     {formatPrice(items.price)}

@@ -133,6 +133,7 @@ func (h *handlerProduct) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	stock, _ := strconv.Atoi(r.FormValue("stock"))
 	request := productdto.UpdateProductRequest{
 		Name:  r.FormValue("name"),
+		Desc:  r.FormValue("desc"),
 		Price: price,
 		Stock: stock,
 		// UserID: userId,
@@ -149,12 +150,24 @@ func (h *handlerProduct) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
 	product, _ := h.ProductRepository.GetProduct(int(id))
 
-	product.Name = request.Name
-	product.Stock = request.Stock
-	product.Price = request.Price
+	if (request.Name) != "" {
+		product.Name = request.Name
+	}
+
+	if request.Price != 0 {
+		product.Price = request.Price
+	}
 
 	if filename != "false" {
-		product.Image = filename
+		product.Image = request.Image
+	}
+
+	if request.Stock != 0 {
+		product.Stock = request.Stock
+	}
+
+	if (request.Desc) != "" {
+		product.Desc = request.Desc
 	}
 
 	data, err := h.ProductRepository.UpdateProduct(product, id)

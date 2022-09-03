@@ -27,7 +27,6 @@ export default function Detail() {
   useEffect(() => {
     findProduct();
   }, []);
-  console.log(product);
 
   // Check Transaction
   const [transaction, setTransaction] = useState();
@@ -60,6 +59,7 @@ export default function Detail() {
 
       const data = {
         product_id: product.id,
+        qty: 1,
         sub_amount: product.price,
       };
 
@@ -88,7 +88,7 @@ export default function Detail() {
               <Row
                 style={{ textAlign: "justify", height: 390, overflow: "auto" }}
               >
-                {Coffee[id].desc}
+                {product?.desc}
               </Row>
               <Row className="my-3">
                 <Col>

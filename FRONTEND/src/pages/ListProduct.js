@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { API } from "../config/api";
 import Header from "../components/Header";
 import { Container, Table } from "react-bootstrap";
-import { Coffee } from "../API/DummyAPI";
+import { useQuery } from "react-query";
 
 export default function ListProduct() {
+  let { data: products, refetch } = useQuery("produuuct", async () => {
+    const response = await API.get("/products");
+    return response.data.data;
+  });
+  let handleDelete = async (id) => {
+    let person = prompt("Input 'DELETE' for Delete Product", "DELETE");
+    if (person == "DELETE") {
+      await API.delete(`product/${id}`);
+    }
+    refetch();
+  };
   return (
     <div>
       <Header />
@@ -23,8 +36,8 @@ export default function ListProduct() {
               <th colspan="2">Edit</th>
             </tr>
           </thead>
-          <tbody>
-            {Coffee.map((item, index) => (
+          <tbody style={{ textAlign: "center" }}>
+            {products?.map((item, index) => (
               <tr
                 // onClick={() => handleShow(item?.id)}
                 key={index}
@@ -32,17 +45,23 @@ export default function ListProduct() {
                 className={item.length === 0 ? "fd" : ""}
               >
                 <td>{index + 1}</td>
-                <td>{item.image}</td>
-                <td>{item.title}</td>
+                <td>
+                  <img src={item.image} alt="bab" style={{ width: 100 }} />
+                </td>
+                <td>{item.name}</td>
                 <td>{item.price}</td>
                 <td>
                   <button className="submit" type="submit">
                     {" "}
-                    EDIT
+                    edit
                   </button>
                 </td>
                 <td>
-                  <button className="btn btn-danger" type="submit">
+                  <button
+                    className="btn btn-danger px-4"
+                    type="submit"
+                    onClick={() => handleDelete(item.id)}
+                  >
                     {" "}
                     delete
                   </button>

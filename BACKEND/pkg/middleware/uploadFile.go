@@ -16,6 +16,12 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 		// the Header and the size of the file
 		file, _, err := r.FormFile("image")
 
+		if err != nil && r.Method == "PATCH" {
+			ctx := context.WithValue(r.Context(), "dataFile", "false")
+			next.ServeHTTP(w, r.WithContext(ctx))
+			return
+		}
+
 		if err != nil {
 			fmt.Println(err)
 			json.NewEncoder(w).Encode("Error Retrieving the File")

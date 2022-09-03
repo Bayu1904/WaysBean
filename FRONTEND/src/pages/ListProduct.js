@@ -17,6 +17,7 @@ export default function ListProduct() {
     }
     refetch();
   };
+  console.log(products);
   return (
     <div>
       <Header />
@@ -51,10 +52,15 @@ export default function ListProduct() {
                 <td>{item.name}</td>
                 <td>{item.price}</td>
                 <td>
-                  <button className="submit" type="submit">
-                    {" "}
-                    edit
-                  </button>
+                  <Link
+                    to={"/addProduct/" + item.id}
+                    className=" text-decoration-none"
+                  >
+                    <button className="submit" type="submit">
+                      {" "}
+                      edit
+                    </button>
+                  </Link>
                 </td>
                 <td>
                   <button

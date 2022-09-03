@@ -136,6 +136,7 @@ func (h *handlerProduct) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		Desc:  r.FormValue("desc"),
 		Price: price,
 		Stock: stock,
+		Image: filename,
 		// UserID: userId,
 	}
 

@@ -67,9 +67,15 @@ function Header() {
   const [show, setShow] = useState(false);
   const [reg, setReg] = useState(false);
 
-  const handleClose = () => (setShow(false), setMessage(null));
+  const handleClose = () => {
+    setShow(false);
+    setMessage(null);
+  };
   const handleShow = () => setShow(true);
-  const regClose = () => (setReg(false), setMessage(null));
+  const regClose = () => {
+    setReg(false);
+    setMessage(null);
+  };
   const regShow = () => setReg(true);
 
   const handleSwitchLogin = () => {

@@ -33,7 +33,9 @@ export default function Transaction() {
                 <Row className="mb-3">
                   <Col sm={4}>
                     <img
-                      src={cart?.product?.image}
+                      src={
+                        "http://localhost:5000/uploads/" + cart?.product?.image
+                      }
                       alt="aa"
                       style={{ width: 100 }}
                     />

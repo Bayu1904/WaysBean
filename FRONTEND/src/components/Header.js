@@ -1,7 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "react-query";
+import { useMutation } from "react-query";
 import { API } from "../config/api";
 import { UserContext } from "../utils/CreateContext";
 
@@ -27,10 +27,19 @@ import Cart from "../Assets/Groupcart.png";
 let profilPict = <img src={Foto} alt="122" />;
 function Header() {
   //transaction Query
-  let { data: transaction } = useQuery("products", async () => {
-    const response = await API.get("/transaction-status");
-    return response.data.data;
-  });
+  const [cart, setCart] = useState(null);
+
+  useEffect(() => {
+    const findProduct = async () => {
+      try {
+        let response = await API.get("/transaction-status");
+        setCart(response.data.data.carts.length);
+      } catch (e) {
+        console.log(e.message);
+      }
+    };
+    findProduct();
+  }, [setCart]);
 
   // StateRegister
   const [message, setMessage] = useState(null);
@@ -227,7 +236,7 @@ function Header() {
         </Navbar.Brand>
 
         <div className="d-flex">
-          {state.isLogin ? (
+          {state.user.status === "customer" ? (
             <>
               <Nav className="me-auto">
                 <Link to="/Cart">
@@ -235,7 +244,7 @@ function Header() {
                 </Link>
                 <span className="rounded-circle">
                   {/* {props.count} */}
-                  {transaction?.carts?.length}
+                  {cart}
                 </span>
                 <NavDropdown
                   id="nav-dropdown-dark-example"
@@ -259,7 +268,7 @@ function Header() {
                 </NavDropdown>
               </Nav>
             </>
-          ) : state.isAdmin ? (
+          ) : state.user.status === "admin" ? (
             <>
               <Nav className="me-auto">
                 <NavDropdown

@@ -56,3 +56,11 @@ code {
   padding: 5px;
   border-radius: 5px;
 }
+
+.none {
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  color: #613D2B;
+  font-size: x-large;
+}

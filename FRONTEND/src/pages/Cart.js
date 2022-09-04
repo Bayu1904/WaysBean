@@ -168,6 +168,7 @@ export default function Cart() {
                     <div>
                       <p style={{ fontWeight: 900 }}>{item.product.name}</p>
                       <button
+                        className="none"
                         onClick={() =>
                           handleClickmin(
                             item.id,
@@ -177,15 +178,16 @@ export default function Cart() {
                           )
                         }
                       >
-                        Less
+                        -
                       </button>
-                      <p className="d-inline mx-2">{item?.qty}</p>
+                      <p className="d-inline mx-2 none">{item?.qty}</p>
                       <button
+                        className="none"
                         onClick={() =>
                           handleClickplus(item.qty, item.id, item.product.price)
                         }
                       >
-                        Add
+                        +
                       </button>
                     </div>
                   </Col>

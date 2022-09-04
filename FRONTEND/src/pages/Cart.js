@@ -74,66 +74,67 @@ export default function Cart() {
 
   // pay Handler
   const form = {
-    status: "failed",
+    status: "success",
     total: Total,
   };
 
-  // const handleSubmit = useMutation(async (e) => {
-  //   const config = {
-  //     headers: {
-  //       "Content-type": "application/json",
-  //     },
-  //   };
+  const handleSubmit = useMutation(async (e) => {
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+      },
+    };
 
-  //   // Insert transaction data
-  //   const body = JSON.stringify(form);
+    // Insert transaction data
+    const body = JSON.stringify(form);
 
-  //   const response = await API.patch("/transactionID", body, config);
+    const response = await API.patch("/transactionID", body, config);
 
-  //   console.log(response);
+    console.log(response);
 
-  //   const token = response.data.data.token;
-  //   console.log(token);
-  //   window.snap.pay(token, {
-  //     onSuccess: function (result) {
-  //       /* You may add your own implementation here */
-  //       console.log(result);
-  //       navigate("/profile");
-  //     },
-  //     onPending: function (result) {
-  //       /* You may add your own implementation here */
-  //       console.log(result);
-  //       navigate("/profile");
-  //     },
-  //     onError: function (result) {
-  //       /* You may add your own implementation here */
-  //       console.log(result);
-  //     },
-  //     onClose: function () {
-  //       /* You may add your own implementation here */
-  //       alert("you closed the popup without finishing the payment");
-  //     },
-  //   });
-  // });
+    const token = response.data.data.token;
+    console.log(token);
+    window.snap.pay(token, {
+      onSuccess: function (result) {
+        /* You may add your own implementation here */
+        console.log(result);
+        navigate("/profile");
+      },
+      onPending: function (result) {
+        /* You may add your own implementation here */
+        console.log(result);
+        navigate("/profile");
+      },
+      onError: function (result) {
+        /* You may add your own implementation here */
+        console.log(result);
+      },
+      onClose: function () {
+        /* You may add your own implementation here */
+        alert("you closed the popup without finishing the payment");
+      },
+    });
+  });
 
   // // useEffect on Mitrans
-  // useEffect(() => {
-  //   //change this to the script source you want to load, for example this is snap.js sandbox env
-  //   const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
-  //   //change this according to your client-key
-  //   const myMidtransClientKey = process.env.REACT_APP_MIDTRANS_CLIENT_KEY;
+  useEffect(() => {
+    //change this to the script source you want to load, for example this is snap.js sandbox env
+    const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
+    //change this according to your client-key
+    const myMidtransClientKey = "SB-Mid-client-kGTHyTyq5S4wWJya";
 
-  //   let scriptTag = document.createElement("script");
-  //   scriptTag.src = midtransScriptUrl;
-  //   // optional if you want to set script attribute
-  //   // for example snap.js have data-client-key attribute
-  //   scriptTag.setAttribute("data-client-key", myMidtransClientKey);
+    let scriptTag = document.createElement("script");
+    scriptTag.src = midtransScriptUrl;
+    // optional if you want to set script attribute
+    // for example snap.js have data-client-key attribute
+    scriptTag.setAttribute("data-client-key", myMidtransClientKey);
 
-  //   document.body.appendChild(scriptTag);
-  //   return () => {
-  //     document.body.removeChild(scriptTag);
-  //   };
-  // }, []);
+    document.body.appendChild(scriptTag);
+    return () => {
+      document.body.removeChild(scriptTag);
+    };
+  }, []);
+
   return (
     <>
       <Header />
@@ -231,7 +232,7 @@ export default function Cart() {
             <button
               className="submit"
               type="submit"
-              // onClick={(e) => handleSubmit.mutate(e)}
+              onClick={(e) => handleSubmit.mutate(e)}
             >
               {" "}
               PAY

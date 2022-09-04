@@ -53,14 +53,14 @@ func (r *repository) DeleteTransaction(transaction models.Transaction) (models.T
 
 func (r *repository) UpdateTransactions(status string, ID string) error {
 	var transaction models.Transaction
-	r.db.Preload("Product").First(&transaction, ID)
+	r.db.Preload("User").Preload("Carts").Preload("Carts.Product").Preload("Carts.Toping").First(&transaction, ID)
 
 	// If is different & Status is "success" decrement product quantity
 	if status != transaction.Status && status == "success" {
-		var product models.Product
-		r.db.First(&product, transaction.ID)
-		// product.Qty = product.Qty - 1
-		r.db.Save(&product)
+		// var product models.Product
+		// r.db.First(&product, transaction.ID)
+		// // product.Qty = product.Qty - 1
+		// r.db.Save(&product)
 	}
 
 	transaction.Status = status

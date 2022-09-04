@@ -12,7 +12,9 @@ import (
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
+	"github.com/midtrans/midtrans-go/snap"
 
 	"github.com/gorilla/mux"
 
@@ -176,7 +178,7 @@ func (h *handlerTransaction) UpdateTransaction(w http.ResponseWriter, r *http.Re
 		json.NewEncoder(w).Encode(response)
 	}
 
-	dataTransactions, err := h.TransactionRepository.FindbyIDTransaction(idTrans, "unpay")
+	dataTransactions, err := h.TransactionRepository.FindbyIDTransaction(idTrans, request.Status)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(err.Error())
@@ -184,30 +186,30 @@ func (h *handlerTransaction) UpdateTransaction(w http.ResponseWriter, r *http.Re
 	}
 
 	// // 1. Initiate Snap client
-	// var s = snap.Client{}
-	// s.New("SB-Mid-server-4eCWOLTHCsl1kjXWS_5hPoWZ", midtrans.Sandbox)
+	var s = snap.Client{}
+	s.New(os.Getenv("SERVER_KEY"), midtrans.Sandbox)
 	// // Use to midtrans.Production if you want Production Environment (accept real transaction).
 
 	// // 2. Initiate Snap request param
-	// req := &snap.Request{
-	// 	TransactionDetails: midtrans.TransactionDetails{
-	// 		OrderID:  strconv.Itoa(idTrans),
-	// 		GrossAmt: int64(dataTransactions.Total),
-	// 	},
-	// 	CreditCard: &snap.CreditCardDetails{
-	// 		Secure: true,
-	// 	},
-	// 	CustomerDetail: &midtrans.CustomerDetails{
-	// 		FName: dataTransactions.User.Name,
-	// 		Email: dataTransactions.User.Email,
-	// 	},
-	// }
+	req := &snap.Request{
+		TransactionDetails: midtrans.TransactionDetails{
+			OrderID:  strconv.Itoa(dataTransactions.ID),
+			GrossAmt: int64(dataTransactions.Total),
+		},
+		CreditCard: &snap.CreditCardDetails{
+			Secure: true,
+		},
+		CustomerDetail: &midtrans.CustomerDetails{
+			FName: dataTransactions.User.Name,
+			Email: dataTransactions.User.Email,
+		},
+	}
 
 	// // 3. Execute request create Snap transaction to Midtrans Snap API
-	// snapResp, _ := s.CreateTransaction(req)
+	snapResp, _ := s.CreateTransaction(req)
 
 	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: 200, Data: dataTransactions}
+	response := dto.SuccessResult{Code: 200, Data: snapResp}
 	json.NewEncoder(w).Encode(response)
 }
 

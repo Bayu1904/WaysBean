@@ -17,7 +17,6 @@ export default function ListProduct() {
     }
     refetch();
   };
-  console.log(products);
   return (
     <div>
       <Header />
